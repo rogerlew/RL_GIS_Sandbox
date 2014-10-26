@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "NED10mElevationReferencing", "NED10mElevationReferencing\NED10mElevationReferencing.pyproj", "{A2111644-3EBF-4D1F-B5A2-6DD7F8C0D76F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2111644-3EBF-4D1F-B5A2-6DD7F8C0D76F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2111644-3EBF-4D1F-B5A2-6DD7F8C0D76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2111644-3EBF-4D1F-B5A2-6DD7F8C0D76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2111644-3EBF-4D1F-B5A2-6DD7F8C0D76F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

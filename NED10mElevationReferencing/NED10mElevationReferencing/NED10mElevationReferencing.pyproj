@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>a2111644-3ebf-4d1f-b5a2-6dd7f8c0d76f</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>elevationService.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>KML_ElevationReferencing</Name>
+    <RootNamespace>KML_ElevationReferencing</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="elevationService.py" />
+    <Compile Include="kml_altitudefiller.py" />
+    <Compile Include="singletonmixin.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="testdata\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="testdata\subcatchments.kml" />
+    <Content Include="testdata\subcatchments1.kml" />
+    <Content Include="testdata\TestPath.kml" />
+    <Content Include="testdata\TestPath2.kml" />
+    <Content Include="testdata\validation_elevations.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>
