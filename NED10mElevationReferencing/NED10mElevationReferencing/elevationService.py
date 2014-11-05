@@ -89,44 +89,115 @@ class GeoTiff:
         return self.left < lng and lng < self.right and \
                self.lower < lat and lat < self.upper
 
+
     def getElevation(self, lng, lat, method='cubic'):
         x, y = self.getPixelCoords(lng, lat)
         w, h = self.ds.RasterXSize, self.ds.RasterYSize
-
+        
+        if x < 0 or x > w or y < 0 or y > h:
+            return float('nan')
+        
         if method == 'bilinear':
-            _x = [int(floor(x)), int(ceil(x))]
-            _y = [int(floor(y)), int(ceil(y))]
-
+            _x = [int(floor(x))-1, int(ceil(x))-1]
+            if _x[0] < 0 : _x = [0, 1]
+            
+            _y = [int(floor(y))-1, int(ceil(y))-1]
+            if _y[0] < 0 : _y = [0, 1]
+            
             data = self.band.ReadAsArray(_x[0], _y[0], 2, 2)
             func = interpolate.interp2d(_x, _y, data, kind='linear')
             z = func(x, y)[0]
+                
         elif method == 'cubic':
             xr, yr = int(round(x)), int(round(y))
 
             if xr - 2 < 0:
                 _x = [0, 1, 2, 3, 4]
             elif xr + 2 > w:
-                _x = [w-4, w-3, w-2, w-1, w]
+                _x = [w-5, w-4, w-3, w-2, w-1]
             else:
-                _x = [xr-2, xr-1, xr, xr+1, xr+2]
+                _x = [xr-3, xr-2, xr-1, xr, xr+1]
                 
             if yr - 2 < 0:
                 _y = [0, 1, 2, 3, 4]
             elif yr + 2 >= h:
-                _y = [h-4, h-3, h-2, h-1, h]
+                _y = [h-5, h-4, h-3, h-2, h-1]
             else:
-                _y = [yr-2, yr-1, yr, yr+1, yr+2]
-
+                _y = [yr-3, yr-2, yr-1, yr, yr+1]
+              
             data = self.band.ReadAsArray(_x[0], _y[0], 5, 5)
-
             func = interpolate.interp2d(_x, _y, data, kind='cubic')
+            
             z = func(x, y)[0]
+            
         else:
             x, y = int(round(x)), int(round(y))
-            z = self.band.ReadAsArray(x, y, 1, 1)[0,0]
 
+            if x == w : x = w-1
+            if y == h : y = h-1
+            
+            z = self.band.ReadAsArray(x, y, 1, 1)
+
+            if z is not None:
+                return z[0,0]
+            else:
+                return float('nan')
+            
         return z
+                
+    def getMaskFromPolyCoords(self, poly_coords):
+        """
+        build a blurred mask for merging bathymetry into
+        DEM
 
+        poly_coords - a list of (lng, lat) coordinates
+        src - file name of the DEM used for merging
+
+        returns a 2D np.array with values between [0-1]
+        Should be 1 around the convex hull of the zero_coords
+        """
+        ref_data = self.band.ReadAsArray()
+        srs = self.srs
+        proj = self.proj
+        transform = self.transform
+        xsize, ysize = self.xsize, self.ysize
+
+        # Create a new raster dataset in memory 
+        driver = gdal.GetDriverByName('MEM')
+        dst_ds = driver.Create('', xsize, ysize, 
+                               1, gdal.GDT_Float32)
+        dst_ds.SetGeoTransform(transform)
+        dst_ds.SetProjection(proj)
+
+        data = np.zeros((ysize, xsize))
+        dst_band = dst_ds.GetRasterBand(1)
+        dst_band.WriteArray(data)
+
+        # Create a memory layer to rasterize from.
+        rast_ogr_ds = \
+                  ogr.GetDriverByName('Memory').CreateDataSource( 'wrk' )
+        rast_mem_lyr = rast_ogr_ds.CreateLayer( 'poly', srs=srs )
+
+        # Add a polygon.
+        coord_str = ','.join(['%f %f'%(lng,lat) for lng,lat in zero_coords])
+        wkt_geom = 'POLYGON((' + coord_str + '))'
+
+        feat = ogr.Feature( rast_mem_lyr.GetLayerDefn() )
+        feat.SetGeometryDirectly( ogr.Geometry(wkt = wkt_geom) )
+
+        rast_mem_lyr.CreateFeature( feat )
+
+        # Run the algorithm.
+        err = gdal.RasterizeLayer( dst_ds, [1], rast_mem_lyr,
+                                   burn_values = [1.0] )
+
+        # Pull data back out of the dataset
+        data = dst_band.ReadAsArray()
+        
+        dst_ds = None # close dataset to make sure memory is released
+
+        return data
+    
 class Server(Singleton):
     """
     This class keeps track of the available DEMs and handles requests for elevation
