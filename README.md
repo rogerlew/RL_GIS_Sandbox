@@ -18,4 +18,6 @@ The Water Erosion Prediction Project (WEPP) models precipitation, runoff, and
 erosion at the subcatchment level using hillslopes derived from TOPAZ. This
 module provides functionality for reading the text outputs to hd5.
 
-
+## ydalinfo
+A gdalinfo replacement that provides extents, stemleaf band histograms, JSON
+output and is callable from python
