@@ -84,7 +84,8 @@ Usage:
  -listmdd
     (GDAL >= 1.11) List all metadata domains available for the dataset
  -mdd domain
-    Report metadata for the specified domain. Starting with GDAL 1.11, "all" can be used to report metadata in all domains
+    Report metadata for the specified domain. Starting with GDAL 1.11, "all" 
+    can be used to report metadata in all domains
 """
 
 def _stemleafReport(counts, multiplier=None):
@@ -249,7 +250,7 @@ def _bandReport(hDataset, iBand, verbose, bComputeMinMax, bApproxStats,
 
     if bReportStemleaf:
 
-        hist = hBand.GetDefaultHistogram(force = True, callback = gdal.TermProgress)
+        hist = hBand.GetDefaultHistogram(force=True, callback=gdal.TermProgress)
         if hist is not None and verbose:
             dfMin = hist[0]
             dfMax = hist[1]
